@@ -160,7 +160,7 @@ page, with the defined PAGE-ID "
         (parent-id (if (sync-docs-get-parent-id) (sync-docs-get-parent-id) (format "%s" sync-docs-default-parent-id)))
         (page-id (sync-docs-get-sync-id)))
     (if (sync-docs-get-sync-id)
-        (sync-docs-update-page page-id parent-id)
+        (sync-docs-update-page page-id site-id parent-id)
       (sync-docs-create-page site-id parent-id))
     (message "Site %s updated on %s with page id: %s" site-id parent-id page-id)))
 
