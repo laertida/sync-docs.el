@@ -68,7 +68,7 @@ inside <body></body> tags.
   (with-current-buffer
       ;; this let is for set variables for execution on
       ;; org-html-export-as-html
-      (let (;(org-export-show-temporary-export-buffer nil)
+      (let ((org-export-show-temporary-export-buffer nil)
             (async nil)
             (subtreep nil)
             (visible-only nil)
@@ -156,7 +156,7 @@ page, with the defined PAGE-ID "
 (defun sync-docs ()
   "This function helps to update "
   (interactive)
-  (let ((site-id (sync-docs-get-sync-id))
+  (let ((site-id (sync-docs-get-site-id))
         (parent-id (if (sync-docs-get-parent-id) (sync-docs-get-parent-id) (format "%s" sync-docs-default-parent-id)))
         (page-id (sync-docs-get-sync-id)))
     (if (sync-docs-get-sync-id)
