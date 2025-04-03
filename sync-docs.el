@@ -126,23 +126,19 @@ inside <body></body> tags.
     :success (cl-function
               (lambda (&key data &allow-other-keys)
                 (message "I sent: %S" (assoc-default 'parentId data))
-                (org-entry-put (point-min) "SYNC_DOCS_ID" (assoc-default 'id data))
-                )))
+                (org-entry-put (point-min) "SYNC_DOCS_ID" (assoc-default 'id data))))))
 
-  )
-
-(defun sync-docs-update-page (pageId &optional spaceId parentId)
+(defun sync-docs-update-page (page-id &optional space-id parent-id)
   "This functioh helps to update an already created
-page, with the defined pageId
-"
+page, with the defined PAGE-ID "
   (request
     (concat sync-docs-host "/wiki/api/v2/pages/" (sync-docs-get-sync-id))
     :type "PUT"
     :headers `(("Content-Type" . "application/json")
                ("Authorization" . ,(sync-docs-generate-auth sync-docs-user sync-docs-token)))
-    :data (json-encode `( ("spaceId" . ,sync-docs-space-id)
-                          ("id" . ,pageId)
-                          ("parentId" . ,sync-docs-default-parent-id)
+    :data (json-encode `( ("spaceId" . ,space-id)
+                          ("id" . ,page-id)
+                          ("parentId" . ,parent-id)
                           ("status" . "draft")
                           ("title" . ,(org-get-title))
                           ("body" . (("representation" . "storage")
@@ -155,11 +151,11 @@ page, with the defined pageId
               (lambda (&key data &allow-other-keys)
                 (message "Page updated with id: %S!" (assoc-default 'id data))
                 (org-entry-put (point-min) "SYNC_DOCS_ID" (assoc-default 'id data))
-                )))
-  )
+                ))))
 
 (defun sync-docs ()
   "This function helps to update "
+  (interactive)
   (let ((site-id (sync-docs-get-sync-id))
         (parent-id (if (sync-docs-get-parent-id) (sync-docs-get-parent-id) (format "%s" sync-docs-default-parent-id)))
         (page-id (sync-docs-get-sync-id)))
