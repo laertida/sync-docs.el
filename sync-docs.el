@@ -139,9 +139,9 @@ PARENTID is the parent id of the page where this page will be published."
     :type "PUT"
     :headers `(("Content-Type" . "application/json")
                ("Authorization" . ,(sync-docs-generate-auth sync-docs-user sync-docs-token)))
-    :data (json-encode `( ("spaceId" . ,sync-docs-space-id)
+    :data (json-encode `( ("spaceId" . ,(or (sync-docs-get-site-id) sync-docs-space-id))
                           ("id" . ,pageId)
-                          ("parentId" . ,sync-docs-default-parent-id)
+                          ("parentId" . ,(or (sync-docs-get-parent-id) sync-docs-default-parent-id))
                           ("status" . ,status)
                           ("title" . ,(org-get-title))
                           ("body" . (("representation" . "storage")
@@ -152,23 +152,23 @@ PARENTID is the parent id of the page where this page will be published."
               (lambda (&key data &allow-other-keys)
                 (message "Page updated with id: %S!" (assoc-default 'id data))
                 (org-entry-put (point-min) "SYNC_DOCS_ID" (assoc-default 'id data))
-                (org-entry-put (point-min) "SYNC_DOCS_VERSION" (number-to-string(assoc-default 'number (assoc-default 'version data))))))))
+                (org-entry-put (point-min) "SYNC_DOCS_VERSION" (number-to-string(assoc-default 'number (assoc-default 'version data))))))
+    :error (cl-function
+            (lambda (&key data &allow-other-keys)
+              (message "The error is %s" data)))))
 
 
 (defun sync-docs-create-or-update-attachments (image-path)
   "This function helps to create an attachment.
 IMAGE-PATH is the path where the image exists."
-  (shell-command (concat "curl -v " "-u " (concat "'" sync-docs-user ":" sync-docs-token "' ")
-                         "-X PUT " "-H 'X-Atlassian-Token: nocheck' "
-                         "-F 'file=@"
-                         image-path
-                         "' '"
-                         (concat sync-docs-host "/wiki/rest/api/content/")
-                         (sync-docs-get-sync-id)
-
-                         "/child/attachment'"
-                         ))
-  )
+  (async-shell-command (concat "curl -v " "-u " (concat "'" sync-docs-user ":" sync-docs-token "' ")
+                               "-X PUT " "-H 'X-Atlassian-Token: nocheck' "
+                               "-F 'file=@"
+                               image-path
+                               "' '"
+                               (concat sync-docs-host "/wiki/rest/api/content/")
+                               (sync-docs-get-sync-id)
+                               "/child/attachment'" )))
 
 
 (defun sync-docs-get-images ()
@@ -198,18 +198,14 @@ UPGRADE-IMAGES is a flag that indicates if the images will be updated or not."
   (interactive (list
                 (completing-read "Which is the status of this page? " '("draft" "current"))
                 (read-string "Please write a message for this version: ")
-                (let* ((upgrade '(("yes" . t)
-                                  ("no" . nil)))
-                       (selected-option (completing-read "Do you want to publish images" (mapcar #'car upgrade))))
-                  (cdr (assoc selected-option upgrade)))))
+                (completing-read "Do you want to publish or update images? " '("yes" "no"))))
   (if (sync-docs-get-sync-id)
       (progn (sync-docs-update-page (sync-docs-get-sync-id) status message)
-             (sync-docs-upgrade-all-images))
+             (if (string= upgrade-images "yes")
+                 (sync-docs-upgrade-all-images)))
     (progn (sync-docs-create-page (or (sync-docs-get-site-id) sync-docs-space-id)
                                   (or (sync-docs-get-parent-id) sync-docs-default-parent-id)
-                                  status)
-           (if upgrade-images
-               (sync-docs-upgrade-all-images)))))
+                                  status))))
 
 (provide 'sync-docs)
 ;;; sync-docs.el ends here
