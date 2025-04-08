@@ -63,14 +63,11 @@ inside <body></body> tags."
   (with-current-buffer
       ;; this let is for set variables for execution on
       ;; org-html-export-as-html
-      (let(
-           (org-export-show-temporary-export-buffer nil)
-           (async nil)
+      (let((async nil)
            (subtreep nil)
            (visible-only nil)
            (body-only t)
-           (ext-plist nil)
-           )
+           (ext-plist nil))
         (org-html-export-as-html async subtreep visible-only body-only ext-plist))
     (buffer-string)))
 
