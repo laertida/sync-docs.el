@@ -9,7 +9,7 @@
 ;; Version: 0.0.1
 ;; Keywords: abbrev bib c calendar comm convenience data docs emulations extensions faces files frames games hardware help hypermedia i18n internal languages lisp local maint mail matching mouse multimedia news outlines processes terminals tex tools unix vc wp
 ;; Homepage: https://github.com/laertida/sync-docs
-;; Package-Requires: ((emacs "24.3"))
+;; Package-Requires: ((emacs "29.1"))
 ;;
 ;; This file is not part of GNU Emacs.
 ;;
@@ -161,14 +161,16 @@ PARENTID is the parent id of the page where this page will be published."
 (defun sync-docs-create-or-update-attachments (image-path)
   "This function helps to create an attachment.
 IMAGE-PATH is the path where the image exists."
-  (async-shell-command (concat "curl -v " "-u " (concat "'" sync-docs-user ":" sync-docs-token "' ")
-                               "-X PUT " "-H 'X-Atlassian-Token: nocheck' "
-                               "-F 'file=@"
-                               image-path
-                               "' '"
-                               (concat sync-docs-host "/wiki/rest/api/content/")
-                               (sync-docs-get-sync-id)
-                               "/child/attachment'" )))
+  (with-temp-buffer
+    (call-process "curl" nil t nil (concat "-v " "-u " (concat "'" sync-docs-user ":" sync-docs-token "' ")
+                                           "-X PUT " "-H 'X-Atlassian-Token: nocheck' "
+                                           "-F 'file=@"
+                                           image-path
+                                           "' '"
+                                           (concat sync-docs-host "/wiki/rest/api/content/")
+                                           (sync-docs-get-sync-id)
+                                           "/child/attachment'" )))
+  (buffer-string))
 
 
 (defun sync-docs-get-images ()
