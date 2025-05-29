@@ -105,4 +105,5 @@ Contributions are welcome! Please open issues or pull requests.
 
 ## License
 
-MIT © 2025 [laertida](https://github.com/laertida)
+This project is licensed under the terms of the GNU General Public License v2.0 only.  
+See the [LICENSE](LICENSE) file for details.
