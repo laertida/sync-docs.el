@@ -2,7 +2,7 @@
 
 > Seamlessly publish your Emacs org-mode documentation to Atlassian Confluence!
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](LICENSE)
 [![Emacs](https://img.shields.io/badge/emacs-29.1%2B-blue.svg)](https://www.gnu.org/software/emacs/)
 
 ## Overview
@@ -105,5 +105,7 @@ Contributions are welcome! Please open issues or pull requests.
 
 ## License
 
-This project is licensed under the terms of the GNU General Public License v2.0 only.  
+This project is licensed under the terms of the GNU General Public License v3.0 only.  
 See the [LICENSE](LICENSE) file for details.
+
+© 2025 [laertida](https://github.com/laertida)
